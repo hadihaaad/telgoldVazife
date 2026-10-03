@@ -1,19 +1,19 @@
+import os
 import requests
 from pyrogram import Client, filters, idle
 
-# ==========================================
-# مقادیر خودت رو دقیقاً در ۴ خط زیر جایگزین کن:
-# ==========================================
-API_ID = 12345678  # آیدی خودت رو به صورت عدد اینجا بنویس (بدون کوتیشن)
-API_HASH = "YOUR_API_HASH"  # ای‌پی‌آی هش خودت رو اینجا بین کوتیشن‌ها بذار
-SESSION_STRING = "YOUR_SESSION_STRING"  # سشن استرینگ رو اینجا بین کوتیشن‌ها بذار
-WEBHOOK_URL = "YOUR_N8N_WEBHOOK_URL"  # لینک وب‌هوک رو اینجا بین کوتیشن‌ها بذار
-# ==========================================
+# ربات مقادیر رو از همون متغیرهایی که تو Railway می‌سازی می‌خونه
+API_ID = int(os.environ.get("API_ID"))
+API_HASH = os.environ.get("API_HASH")
+SESSION_STRING = os.environ.get("SESSION_STRING")
+WEBHOOK_URL = os.environ.get("WEBHOOK_URL")
 
+# یوزرنیم کانال هدف
 TARGET_USERNAME = "abshode_abasnezhad"
 
 app = Client("n8n_forwarder", session_string=SESSION_STRING, api_id=API_ID, api_hash=API_HASH)
 
+# فیلتر فقط برای پیام‌های کانال عباس نژاد
 @app.on_message(filters.chat(TARGET_USERNAME))
 async def forward_to_n8n(client, message):
     text = message.text or message.caption or ""
