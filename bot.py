@@ -2,19 +2,18 @@ import os
 import requests
 from pyrogram import Client, filters, idle
 
-# ربات مقادیر رو از همون متغیرهایی که تو Railway می‌سازی می‌خونه
 API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
 SESSION_STRING = os.environ.get("SESSION_STRING")
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL")
 
-# یوزرنیم کانال هدف
-TARGET_USERNAME = "abshode_abasnezhad"
+# استفاده از آیدی عددی قطعی به جای یوزرنیم
+TARGET_ID = -1002385788148
 
 app = Client("n8n_forwarder", session_string=SESSION_STRING, api_id=API_ID, api_hash=API_HASH)
 
-# فیلتر فقط برای پیام‌های کانال عباس نژاد
-@app.on_message(filters.chat(TARGET_USERNAME))
+# فیلتر قفل شده روی آیدی عددی
+@app.on_message(filters.chat(TARGET_ID))
 async def forward_to_n8n(client, message):
     text = message.text or message.caption or ""
     data = {
@@ -35,13 +34,16 @@ async def main():
     print("🚀 در حال روشن شدن ربات...")
     await app.start()
     
-    print(f"🔄 در حال اتصال اختصاصی به کانال هدف (@{TARGET_USERNAME})...")
+    print("🔄 بررسی عضویت در کانال هدف...")
     try:
-        await app.join_chat(TARGET_USERNAME)
-    except:
-        pass # اگر از قبل عضو بود خطا ندهد
+        # تست عضویت با یوزرنیم تا مطمئن شویم اکانت داخل کانال هست
+        await app.join_chat("abshode_abasnezhad")
+        print("✅ ربات در کانال عضو است.")
+    except Exception as e:
+        # این بار خطا چاپ می‌شود تا اگر مشکلی بود ببینیم
+        print(f"ℹ️ وضعیت عضویت: {e}") 
     
-    print("🔄 در حال کش عمومی برای جلوگیری از کرش بخاطر سایر کانال‌ها...")
+    print("🔄 در حال کش عمومی برای شناسایی آیدی‌ها...")
     try:
         async for _ in app.get_dialogs(limit=500):
             pass
@@ -49,7 +51,7 @@ async def main():
     except Exception as e:
         print(f"⚠️ خطای کش عمومی: {e}")
 
-    print(f"🎧 ربات آماده است و فقط پیام‌های @{TARGET_USERNAME} را به n8n می‌فرستد...")
+    print(f"🎧 ربات آماده است و فقط پیام‌های کانال با آیدی {TARGET_ID} را به n8n می‌فرستد...")
     await idle()
     await app.stop()
 
