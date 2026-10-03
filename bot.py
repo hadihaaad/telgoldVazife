@@ -3,14 +3,18 @@ import requests
 from telethon import TelegramClient, events
 from telethon.sessions import StringSession
 
-# خواندن مقادیر مستقیماً از Variables در Railway
+# خواندن تمام مقادیر از Variables در Railway
 API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
 SESSION_STRING = os.environ.get("SESSION_STRING")
 N8N_WEBHOOK = os.environ.get("N8N_WEBHOOK")
 
-# آیدی کانال هدف
-TARGET_CHAT = -1001479335313 
+# خواندن آیدی کانال از متغیرهای محیطی (پشتیبانی از عدد یا یوزرنیم)
+raw_target = os.environ.get("TARGET_CHAT")
+try:
+    TARGET_CHAT = int(raw_target) if raw_target and raw_target.lstrip('-').isdigit() else raw_target
+except:
+    TARGET_CHAT = raw_target
 
 client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
 
